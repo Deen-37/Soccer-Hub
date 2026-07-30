@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "../client";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { handleChange } from "react"
 function EditPost() {
     const [post, setPost] = useState({
         title: "",
@@ -41,8 +40,8 @@ function EditPost() {
             [name]: value,
         }));
     };
-    const deletePost = async () => {
-        event.preventDefault();
+    const deletePost = async (event) => {
+        // no event.preventDefault() because deleting is not form submission
         const { error } = await supabase
             .from("Posts")
             .delete()
@@ -117,7 +116,7 @@ function EditPost() {
                 <button type="submit" onClick={updatePost} >
                     Update Post
                 </button>
-                <button type="submit" onClick={deletePost}>
+                <button type="button" onClick={deletePost}>
                     Delete Post
                 </button>
             </form>

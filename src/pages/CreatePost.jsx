@@ -8,7 +8,8 @@ function CreatePost() {
         title: "",
         content: "",
         image_url: "",
-        category: ""
+        category: "",
+        secret_key: ""
     })
     const navigate = useNavigate();
     const handleChange = (event) => {
@@ -72,6 +73,14 @@ function CreatePost() {
                     placeholder="Category"
                     value={post.category}
                     onChange={handleChange}
+                />
+                {/* Secret key */}
+                <input
+                    type="password"
+                    name="secret_key"
+                    placeholder="Secret Key"
+                    value={post.secret_key} // User's secret key
+                    onChange={handleChange} // Update state
                 />
 
                 <br /><br />

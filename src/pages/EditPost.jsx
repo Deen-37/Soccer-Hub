@@ -42,6 +42,12 @@ function EditPost() {
     };
     const deletePost = async (event) => {
         // no event.preventDefault() because deleting is not form submission
+        const enteredKey = prompt("Enter your secret key:");
+
+        if (enteredKey !== post.secret_key) {
+            alert("Incorrect secret key.");
+            return;
+        }
         const { error } = await supabase
             .from("Posts")
             .delete()
@@ -57,8 +63,13 @@ function EditPost() {
 
 
     const updatePost = async (event) => {
-        event.preventDefault();
+        event.preventDefault(); //asks for secret key
+        const enteredKey = prompt("Enter your secret key:");
 
+        if (enteredKey !== post.secret_key) {
+            alert("Incorrect secret key.");
+            return;
+        }
         const { error } = await supabase
             .from("Posts")
             .update({

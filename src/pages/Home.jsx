@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../client";
 import { Link } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 function Home() {
     //store search term
     const [searchTerm, setSearchTerm] = useState("");
     // Store all posts
     const [posts, setPosts] = useState([]);
     const [sortBy, setSortBy] = useState("upvotes");
+    const [loading, setLoading] = useState(true); // Loading state
+
     // Fetch posts when the page loads
     useEffect(() => {
         getPosts();
@@ -14,6 +17,7 @@ function Home() {
 
     // Get all posts from Supabase
     const getPosts = async () => {
+        setLoading(true); // Start loading
         const { data, error } = await supabase
             .from("Posts")
             .select("*")
@@ -25,8 +29,16 @@ function Home() {
         }
 
         setPosts(data);
+        setLoading(false); // Finished loading
     };
-
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <ClipLoader size={50} />
+                <p>Loading posts...</p>
+            </div>
+        );
+    }
     return (
 
         <div>

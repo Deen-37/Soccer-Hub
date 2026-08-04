@@ -67,10 +67,14 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-<!-- Replace this with whatever GIF tool you used! -->
-GIF created with **ScreenToGif**
+<div>
+    <a href="https://www.loom.com/share/dd852e4b293d4b23846e1a89ffb0dee2">
+      <p>soccer-hub - 4 August 2026 - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/dd852e4b293d4b23846e1a89ffb0dee2">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/dd852e4b293d4b23846e1a89ffb0dee2-1140c7eb6926f5cb-full-play.gif#t=0.1">
+    </a>
+  </div>
 
 
 ## Notes

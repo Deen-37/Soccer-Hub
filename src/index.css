@@ -1,111 +1,427 @@
+/* ===========================================================
+   Soccer Hub — foundation
+   Design tokens + base page setup. Component styles come later,
+   one file at a time.
+   =========================================================== */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Neutrals */
+  --bg:  #e7e7e9;          /* page background */
+  --surface: #057805;     /* cards, inputs */
+  --text: #fdfdfd;        /* headings / main text */
+  --text-muted: #aeb9ae;     /* secondary text */
+  --border: #e7e7e9;      /* hairline borders */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Accent — pitch green */
+  --accent: #057805 ;
+  --accent-hover: #15803d;
+  --accent-soft: #f0fdf4;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  /* Red — used for the category/flag badges on cards */
+  --red: #dc2626;
+
+  /* Shape */
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
   color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
 }
 
+/* The app fills the full window width now; centering moves to .container below */
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  width: 100%;
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* The centered content column (page content + nav-inner share this width) */
+.container {
+  max-width: 760px;    /* the readable column width */
+  margin: 0 auto;      /* center it in the window */
+  padding: 0 20px 80px; /* side gutters + space at the bottom of the page */
 }
 
+/* Base typography */
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 32px 0 24px;
 }
+
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
+  font-size: 20px;
+  font-weight: 600;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
 }
+
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* Green content text for the Create / Edit / View pages (light background).
+   The navbar sits outside these wrappers, so it keeps its own white text.
+   Inputs and buttons set their own colors, so they stay readable too. */
+.page {
+  color: var(--accent);
+}
+
+
+
+/* ---------- Navbar ---------- */
+
+/* The bar itself: green, sticky, spans the full width of #root (which is full-width) */
+nav {
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--accent);   /* green navbar background */
+  z-index: 20;
+}
+
+/* Inner wrapper: centered and capped at the page width, so the brand + links
+   line up with the page content below while the green bar stays full-width */
+.nav-inner {
+  max-width: 760px;                /* same cap as the page content */
+  margin: 0 auto;                  /* center it inside the full-width bar */
+               /* bar height (top/bottom) + side gutters */
+  display: flex;                   /* brand on the left, links on the right */
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+nav .brand h2 {
+  margin: 0;
+  font-size: 22px;                /* bigger, more eye-catching brand */
+  font-weight: 800;              /* extra bold */
+  letter-spacing: -0.01em;
+  color: #fff;
+  padding: 16px 20px;             /* white brand text on the green bar */
+}
+
+
+
+nav .nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+nav .nav-links a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85); /* soft white links on green */
+  transition: background 0.15s, color 0.15s;
+}
+
+nav .nav-links a:hover {
+  background: rgba(255, 255, 255, 0.18); /* faint white highlight on hover */
+  color: #fff;                            /* full white text on hover */
+}
+
+/* "Create Post" as a call-to-action: a solid white pill that pops on the green bar */
+nav .nav-links a.nav-cta {
+  background: #fff;             /* white pill background */
+  color: var(--accent);        /* green text to match the bar */
+  font-weight: 700;            /* bolder than the plain Home link */
+}
+
+/* Keep the CTA white on hover (just a touch softer), not the faint-white link style */
+nav .nav-links a.nav-cta:hover {
+  background: rgba(255, 255, 255, 0.88); /* slightly dimmed white */
+  color: var(--accent);                   /* stay green */
+}
+
+/* ---------- Form controls (shared base) ---------- */
+
+/* Base look for every text input, textarea, and dropdown */
+input,
+textarea,
+select {
+  font-family: inherit;              /* use the page font, not the browser default */
+  font-size: 15px;                   /* readable input text size */
+  color: var(--text);                /* dark text color from our tokens */
+  background: var(--surface);        /* white field background */
+  border: 1px solid var(--border);   /* thin light-gray border */
+  border-radius: var(--radius-sm);   /* slightly rounded corners (8px) */
+  padding: 10px 14px;                /* inner spacing so text isn't cramped */
+  outline: none;                     /* remove default focus ring (we add our own next) */
+  transition: border-color 0.15s, box-shadow 0.15s; /* animate focus smoothly */
+}
+
+/* When a field is focused (clicked/typed into), highlight it green */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);              /* green border on focus */
+  box-shadow: 0 0 0 3px var(--accent-soft); /* soft green glow ring around it */
+}
+
+/* Base look for buttons — a solid green primary button */
+button {
+  font-family: inherit;            /* use the page font */
+  font-size: 14px;                 /* button label size */
+  font-weight: 600;                /* semi-bold text */
+  color: #fff;                     /* white label */
+  background: var(--accent);       /* green fill */
+  border: 1px solid transparent;   /* invisible border, keeps size equal to bordered buttons */
+  border-radius: var(--radius-sm); /* rounded corners (8px) */
+  padding: 10px 18px;              /* inner spacing */
+  cursor: pointer;                 /* show the hand cursor on hover */
+  transition: background 0.15s;    /* fade the hover color smoothly */
+}
+
+/* Darken the button slightly on hover */
+button:hover {
+  background: var(--accent-hover); /* darker green when hovered */
+}
+
+/* ---------- Home: filter pills ---------- */
+
+/* The rows that hold the category buttons and the flag buttons */
+.category-buttons,
+.flag-buttons {
+  display: flex;         /* lay the buttons out in a row */
+  flex-wrap: wrap;       /* wrap to the next line if they don't all fit */
+  gap: 8px;              /* space between each button */
+  margin-bottom: 12px;   /* space below each row */
+}
+
+/* Make the filter buttons look like light rounded "pills" (overrides the green base) */
+.category-buttons button,
+.flag-buttons button {
+  font-size: 13px;                 /* smaller text than main buttons */
+  font-weight: 500;                /* medium weight */
+  color: var(--text-muted);        /* gray text instead of white */
+  background: var(--surface);      /* light background instead of green */
+  border: 1px solid var(--border); /* thin gray outline */
+  border-radius: 999px;            /* fully rounded ends = pill shape */
+  padding: 6px 14px;               /* compact inner spacing */
+}
+
+/* Green highlight when you hover a filter pill */
+.category-buttons button:hover,
+.flag-buttons button:hover {
+  border-color: var(--accent);    /* green outline */
+  color: var(--accent);           /* green text */
+  background: var(--accent-soft);  /* very light green background */
+}
+
+/* ---------- Home: toolbar (search + sort) ---------- */
+
+/* Puts the search box and the sort dropdown side by side */
+.toolbar {
+  display: flex;         /* lay children out in a row */
+  gap: 10px;             /* space between the search box and dropdown */
+  margin-bottom: 16px;   /* space below the toolbar */
+  flex-wrap: wrap;       /* stack them if the screen is too narrow */
+}
+
+/* Let the search box stretch to fill the row; the dropdown keeps its size */
+.toolbar input {
+  flex: 1 1 240px;       /* grow to fill space, but never thinner than 240px */
+}
+
+/* ---------- Home: post feed ---------- */
+
+/* The vertical stack that holds all the post cards */
+.feed {
+  display: flex;          /* use flexbox... */
+  flex-direction: column; /* ...stacked top to bottom */
+  gap: 12px;              /* even space between each card */
+  margin-top: 20px;      /* space above the whole list */
+}
+
+/* Each post shown as a clickable card (the <Link> itself) */
+.post-card {
+  position: relative;                            /* anchor for the corner badges */
+  display: block;                                /* let the link fill the full row width */
+  background: var(--surface);                    /* card background */
+  border: 1px solid var(--border);               /* thin gray border */
+  border-radius: var(--radius);                  /* rounded corners (12px) */
+  padding: 20px 22px;                            /* inner spacing */
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);  /* very subtle shadow for depth */
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s; /* animate the hover */
+}
+
+/* Lift the card slightly on hover so it feels clickable */
+.post-card:hover {
+  border-color: var(--text-muted);               /* darker border on hover */
+  box-shadow: 0 4px 16px rgba(24, 24, 27, 0.06); /* bigger, softer shadow */
+  transform: translateY(-1px);                   /* nudge the card up 1px */
+}
+
+/* The post title inside the card */
+.post-card h2 {
+  margin-bottom: 8px;        /* space between the title and the upvotes/date lines */
+}
+
+/* The "Upvotes: ..." and "Posted at: ..." lines inside the card */
+.post-card p {
+  font-size: 13px;           /* small text */
+  color: var(--text-muted);  /* gray so it stays secondary to the title */
+}
+
+/* Category in the card's lower-right corner — plain red text, no background */
+.card-category {
+  position: absolute;    /* positioned relative to the .post-card */
+  bottom: 14px;          /* gap from the card's bottom edge */
+  right: 16px;           /* gap from the card's right edge */
+  font-size: 12px;       /* small label */
+  font-weight: 600;      /* semi-bold so it reads clearly */
+  color: var(--red);     /* red text */
+}
+
+/* Flag emoji in the card's top-right corner */
+.card-flag {
+  position: absolute;    /* positioned relative to the .post-card */
+  top: 14px;             /* gap from the card's top edge */
+  right: 16px;           /* gap from the card's right edge */
+  font-size: 18px;       /* a bit bigger so the emoji reads well */
+  line-height: 1;        /* keep it tight, no extra vertical space */
+}
+
+/* ---------- Loading state ---------- */
+
+/* Centers the spinner and "Loading posts..." text on the page */
+.loading-container {
+  display: flex;             /* flexbox... */
+  flex-direction: column;    /* ...spinner on top, text below */
+  align-items: center;       /* center them horizontally */
+  gap: 16px;                 /* space between the spinner and text */
+  padding: 100px 20px;       /* push it down from the top so it sits roughly centered */
+  color: var(--text-muted);  /* gray text */
+}
+
+/* ---------- Forms (Create / Edit pages) ---------- */
+
+/* White card that wraps the whole form */
+.form-card {
+  background: var(--surface);                    /* card background */
+  border: 1px solid var(--border);               /* thin gray border */
+  border-radius: var(--radius);                  /* rounded corners (12px) */
+  padding: 28px;                                 /* roomy inner spacing */
+  box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);  /* subtle shadow for depth */
+  text-align: left;                              /* left-align the fields */
+}
+
+/* Row holding the Update / Delete buttons (EditPost) */
+.form-actions {
+  display: flex;   /* buttons side by side */
+  gap: 10px;       /* space between Update and Delete */
+}
+
+/* Delete button — red to signal a destructive action */
+.btn-danger {
+  background: var(--red);  /* red instead of the green base */
+}
+
+.btn-danger:hover {
+  background: #b91c1c;      /* darker red on hover */
+}
+
+/* CreatePost: the Category / Flag / Secret-key group, spaced out in a row */
+.create-post-choice {
+  display: flex;      /* the three fields sit in a row */
+  gap: 12px;          /* even gap between Category, Flag, and Secret key */
+  flex-wrap: wrap;    /* wrap onto the next line on narrow screens */
+}
+
+.create-post-choice{
+  gap: 15px
+}
+
+/* ---------- ViewPost: single post ---------- */
+
+/* The post content sits plain on the page — no card or background */
+
+/* Make the post image responsive and rounded */
+.post-detail img {
+  max-width: 100%;               /* never overflow the card */
+  height: auto;                  /* keep aspect ratio */
+  border-radius: var(--radius);  /* rounded corners */
+  margin-top: 16px;              /* space above the image */
+}
+
+/* The "Posted…" + upvotes line under the post */
+.detail-meta {
+  display: flex;      /* put the two bits on one row */
+  gap: 16px;          /* space between posted-time and upvotes */
+  font-size: 13px;    /* small, secondary text */
+  margin: 16px 0;     /* breathing room above and below */
+}
+
+/* Row of action buttons (Repost / Edit / Upvote) under the post */
+.action-row {
+  display: flex;      /* buttons sit in a row */
+  flex-wrap: wrap;    /* wrap onto the next line on small screens */
+  gap: 10px;          /* space between the buttons */
+  margin: 20px 0;     /* space above and below the row */
+}
+
+/* Strip the green fill from these buttons — plain icon/text, subtle hover */
+.action-row button {
+  background: transparent;         /* no fill */
+  border: none;                    /* no border */
+  color: var(--accent);            /* green "Edit" text (emoji keep their own color) */
+  font-size: 16px;                 /* a touch larger so the icons read */
+  padding: 8px 12px;               /* keeps a comfortable click area */
+  border-radius: var(--radius-sm); /* rounds the hover highlight */
+}
+
+/* Faint gray highlight on hover instead of a darker green */
+.action-row button:hover {
+  background: rgba(0, 0, 0, 0.06); /* subtle tint */
+}
+
+/* Comments section under the post */
+.comments {
+  margin-top: 32px;   /* separate it from the post above */
+}
+
+/* The add-a-comment form: textarea on top, Add button below */
+.comment-form {
+  display: flex;            /* stack the textarea and button... */
+  flex-direction: column;   /* ...vertically */
+  align-items: flex-start;  /* keep the Add button its natural width (left) */
+  gap: 10px;                /* space between textarea and button */
+  margin-bottom: 20px;      /* space before the comment list */
+}
+
+/* Let the comment textarea fill the width */
+.comment-form textarea {
+  width: 100%;
+}
+
+/* Each posted comment shown as a small white card */
+.comment {
+  background: #d1cfcf;                /* white so the green text reads */
+  border: 1px solid var(--border); /* thin border */
+  border-radius: var(--radius-sm); /* slightly rounded */
+  padding: 5px 5px;              /* inner spacing */
+  margin-bottom: 8px;              /* gap between comments */
+  font-size: 14px;                 /* comfortable reading size */
 }

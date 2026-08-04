@@ -25,12 +25,14 @@ function App() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/create" element={<CreatePost />} />
-        <Route path="/post/:id" element={<ViewPost />} />
-        <Route path="/edit/:id" element={<EditPost />} />
-      </Routes>
+      <main className="container">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/create" element={<CreatePost />} />
+          <Route path="/post/:id" element={<ViewPost />} />
+          <Route path="/edit/:id" element={<EditPost />} />
+        </Routes>
+      </main>
 
     </>
 

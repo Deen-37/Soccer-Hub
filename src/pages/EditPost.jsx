@@ -89,10 +89,10 @@ function EditPost() {
     };
 
     return (
-        <div>
+        <div className="page">
             <h1> Edit Post</h1>
 
-            <form >
+            <form className="form-card">
                 <input
                     type="text"
                     name="title"
@@ -101,12 +101,16 @@ function EditPost() {
                     onChange={handleChange}
                 />
 
+                <br /><br />
+
                 <textarea
                     name="content"
                     placeholder="Content"
                     value={post.content}
                     onChange={handleChange}
                 />
+
+                <br /><br />
 
                 <input
                     type="text"
@@ -115,6 +119,9 @@ function EditPost() {
                     value={post.image_url}
                     onChange={handleChange}
                 />
+
+                <br /><br />
+
                 <input
                     type="text"
                     name="category"
@@ -124,12 +131,14 @@ function EditPost() {
                 />
                 <br /><br />
 
-                <button type="submit" onClick={updatePost} >
-                    Update Post
-                </button>
-                <button type="button" onClick={deletePost}>
-                    Delete Post
-                </button>
+                <div className="form-actions">
+                    <button type="submit" onClick={updatePost}>
+                        Update Post
+                    </button>
+                    <button type="button" className="btn-danger" onClick={deletePost}>
+                        Delete Post
+                    </button>
+                </div>
             </form>
         </div>
     )

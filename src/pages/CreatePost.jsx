@@ -9,6 +9,7 @@ function CreatePost() {
         content: "",
         image_url: "",
         category: "",
+        flag: "",
         secret_key: ""
     })
     const navigate = useNavigate();
@@ -32,10 +33,10 @@ function CreatePost() {
         navigate("/")
     }
     return (
-        <div>
+        <div className="page">
             <h1>Create a New Post</h1>
 
-            <form onSubmit={createPost}>
+            <form className="form-card" onSubmit={createPost}>
                 <input
                     type="text"
                     name="title"
@@ -66,23 +67,39 @@ function CreatePost() {
                 />
 
                 <br /><br />
+                <div className="create-post-choice">
+                    <select
+                        name="category"
+                        value={post.category}
+                        onChange={handleChange}
+                    >
+                        <option value="">Select Category</option>
+                        <option value="News">News</option>
+                        <option value="Transfer">Transfer</option>
+                        <option value="Match">Match</option>
+                        <option value="Discussion">Discussion</option>
+                        <option value="Other">Other</option>
+                    </select>
 
-                <input
-                    type="text"
-                    name="category"
-                    placeholder="Category"
-                    value={post.category}
-                    onChange={handleChange}
-                />
-                {/* Secret key */}
-                <input
-                    type="password"
-                    name="secret_key"
-                    placeholder="Secret Key"
-                    value={post.secret_key} // User's secret key
-                    onChange={handleChange} // Update state
-                />
-
+                    {/* Flag: the post's intent (separate from category/topic) */}
+                    <select
+                        name="flag"
+                        value={post.flag}
+                        onChange={handleChange}
+                    >
+                        <option value="">No Flag</option>
+                        <option value="Question">Question</option>
+                        <option value="Opinion">Opinion</option>
+                    </select>
+                    {/* Secret key */}
+                    <input
+                        type="password"
+                        name="secret_key"
+                        placeholder=" Enter secret key"
+                        value={post.secret_key} // User's secret key
+                        onChange={handleChange} // Update state
+                    />
+                </div>
                 <br /><br />
 
                 <button type="submit">

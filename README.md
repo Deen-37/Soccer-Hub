@@ -63,6 +63,8 @@ The following **additional** features are implemented:
 * [x] Search and category filters work together
 * [x] Users can sort posts by newest, oldest, or most upvoted
 
+## 🔗 Live Demo  
+👉 soccerHubS.netlify.app
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:

@@ -76,6 +76,73 @@ app.post("/posts", async(req,res) => {
 
 })
 
+// PUT /posts/:id → update an existing post
+app.put("/posts/:id", async (req, res) => {
+    try {
+        // Get the post ID from the URL
+        const { id } = req.params;
+
+        // Get the updated data from the request body
+        const { title, content, category, image_url, flag } = req.body;
+
+        // Update the matching post
+        const result = await pool.query(
+            `UPDATE Posts
+             SET title = $1,
+                 content = $2,
+                 category = $3,
+                 image_url = $4,
+                 flag = $5
+             WHERE id = $6
+             RETURNING *`,
+            [title, content, category, image_url, flag, id]
+        );
+
+        // Return 404 if the post doesn't exist
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        // Return the updated post
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        // Handle database errors
+        console.error("Error updating post:", error);
+        res.status(500).json({ error: "Failed to update post" });
+    }
+});
+
+
+// DELETE /posts/:id → delete an existing post
+app.delete("/posts/:id", async (req, res) => {
+    try {
+        // Get the post ID from the URL
+        const { id } = req.params;
+
+        // Delete the matching post
+        const result = await pool.query(
+            "DELETE FROM Posts WHERE id = $1 RETURNING *",
+            [id]
+        );
+
+        // Return 404 if the post doesn't exist
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        // Confirm the deletion
+        res.json({
+            message: "Post deleted successfully",
+            post: result.rows[0]
+        });
+
+    } catch (error) {
+        // Handle database errors
+        console.error("Error deleting post:", error);
+        res.status(500).json({ error: "Failed to delete post" });
+    }
+});
 
 // Start the Express server on port 3000
 app.listen(3000, () => {

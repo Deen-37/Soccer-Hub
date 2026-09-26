@@ -3,8 +3,35 @@ import pool from "./db.js"; // Import our PostgreSQL connection pool
 import express from "express";
 const app = express();
 app.use(express.json()) // Express: allow us to read JSON request bodies
-
 // Express route: GET /posts
+
+// GET /posts/:id → retrieve one specific post
+app.get("/posts/:id", async (req, res) => {
+    try {
+        // Get the ID from the URL
+        const { id } = req.params;
+
+        // Find the post with this ID
+        const result = await pool.query(
+            "SELECT * FROM Posts WHERE id = $1",
+            [id]
+        );
+
+        // Return 404 if the post doesn't exist
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        // Return the requested post
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        // Handle database errors
+        console.error("Error fetching post:", error);
+        res.status(500).json({ error: "Failed to fetch post" });
+    }
+});
+
 app.get("/posts", async (req, res) => {
     try {
         // SQL query: get all posts from PostgreSQL
@@ -21,6 +48,7 @@ app.get("/posts", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 app.post("/posts", async(req,res) => {
     

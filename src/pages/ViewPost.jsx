@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { supabase } from "../client";
+
 import { Link } from "react-router-dom";
 function ViewPost() {
 
@@ -13,42 +13,40 @@ function ViewPost() {
     const [originalPost, setOriginalPost] = useState(null); // Original reposted post
     // Fetch original post
     const getOriginalPost = async (id) => {
-        const { data, error } = await supabase
-            .from("Posts")
-            .select("*")
-            .eq("id", id)
-            .single();
+        try {
+            const response = await fetch(`http://localhost:3000/posts/${id}`);
 
-        if (error) return;
+            if (!response.ok) {
+                throw new Error("Failed to fetch original post");
+            }
 
-        setOriginalPost(data);
-    }
+            const data = await response.json();
+            setOriginalPost(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const getPost = async () => {
-        const { data, error } = await supabase
-            .from("Posts")
-            .select("*")
-            .eq("id", id)
-            .single();  // returns in dictionary format. other wise this return an array
-        // Get comments for this post
-        const { data: commentsData, error: commentsError } = await supabase
-            .from("Comments")
-            .select("*")
-            .eq("post_id", id)
-            .order("created_at", { ascending: true });
+        try {
+            // Get the post from Express
+            const response = await fetch(`http://localhost:3000/posts/${id}`);
 
-        if (!commentsError) {
-            setComments(commentsData);
-        }
-        if (error) {
-            alert(error);
-            return;
-        }
+            if (!response.ok) {
+                throw new Error("Failed to fetch post");
+            }
 
-        setPost(data);
-        if (data.reposted_from) {
-            getOriginalPost(data.reposted_from);
+            const data = await response.json();
+
+            setPost(data);
+
+            // Load the original post if this is a repost
+            if (data.reposted_from) {
+                getOriginalPost(data.reposted_from);
+            }
+        } catch (error) {
+            alert(error.message);
         }
-    }
+    };
 
     useEffect(() => {
         getPost();

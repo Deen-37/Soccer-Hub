@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../client";
+
 import { useNavigate, useParams } from "react-router-dom";
 
 function EditPost() {
@@ -14,19 +14,21 @@ function EditPost() {
     const { id } = useParams();
 
     const getPost = async () => {
-        const { data, error } = await supabase
-            .from("Posts")
-            .select("*")
-            .eq("id", id)
-            .single();
-        if (error) {
-            alert(error);
-            return;
+        try {
+
+            //Get the post from Express
+            const response = await fetch(`http://localhost:3000/posts/${id}`);
+            if (!response) {
+                throw new Error("Failed to fetch post");
+            }
+
+            const data = await response.json();
+            setPost(data);
         }
-
-
-        setPost(data);
-    }
+        catch (error) {
+            alert(error.message)
+        }
+    };
 
     useEffect(() => {
         getPost()
@@ -40,52 +42,49 @@ function EditPost() {
             [name]: value,
         }));
     };
-    const deletePost = async (event) => {
-        // no event.preventDefault() because deleting is not form submission
-        const enteredKey = prompt("Enter your secret key:");
+    const deletePost = async () => {
+        try {
+            // Delete through Express
+            const response = await fetch(`http://localhost:3000/posts/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
 
-        if (enteredKey !== post.secret_key) {
-            alert("Incorrect secret key.");
-            return;
+            if (!response.ok) {
+                throw new Error("Failed to delete post");
+            }
+
+            navigate("/");
+        } catch (error) {
+            alert(error.message);
         }
-        const { error } = await supabase
-            .from("Posts")
-            .delete()
-            .eq("id", id);
-
-        if (error) {
-            console.error(error);
-            return;
-        }
-
-        navigate("/");
     };
 
 
     const updatePost = async (event) => {
-        event.preventDefault(); //asks for secret key
-        const enteredKey = prompt("Enter your secret key:");
+        event.preventDefault();
 
-        if (enteredKey !== post.secret_key) {
-            alert("Incorrect secret key.");
-            return;
+        try {
+            // Send updated post to Express
+            const response = await fetch(`http://localhost:3000/posts/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify(post),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update post");
+            }
+
+            navigate(`/post/${id}`);
+        } catch (error) {
+            alert(error.message);
         }
-        const { error } = await supabase
-            .from("Posts")
-            .update({
-                title: post.title,
-                content: post.content,
-                image_url: post.image_url,
-                category: post.category,
-            })
-            .eq("id", id);
-
-        if (error) {
-            console.error(error);
-            return;
-        }
-
-        navigate(`/post/${id}`);
     };
 
     return (

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "../client";
 import { useNavigate } from "react-router-dom";
 
 
@@ -10,7 +9,6 @@ function CreatePost() {
         image_url: "",
         category: "",
         flag: "",
-        secret_key: ""
     })
     const navigate = useNavigate();
     const handleChange = (event) => {
@@ -21,17 +19,42 @@ function CreatePost() {
             [name]: value,      // Update only the field being edited
         }));
     };
+    // const createPost = async (event) => {
+    //     event.preventDefault();
+    //     const { error } = await supabase
+    //         .from("Posts")
+    //         .insert([post])
+    //     if (error) {
+    //         alert(error.message);
+    //         return;
+    //     }
+    //     navigate("/")
+    // }
     const createPost = async (event) => {
         event.preventDefault();
-        const { error } = await supabase
-            .from("Posts")
-            .insert([post])
-        if (error) {
+        try {
+            // Send the post to our Express API
+            const response = await fetch("http://localhost:3000/posts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Send the logged-in user's JWT
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify(post),
+            });
+
+            // Handle API errors
+            if (!response.ok) {
+                throw new Error("Failed to create post");
+            }
+
+            navigate("/");
+        } catch (error) {
             alert(error.message);
-            return;
         }
-        navigate("/")
-    }
+    };
+
     return (
         <div className="page">
             <h1>Create a New Post</h1>
@@ -91,14 +114,7 @@ function CreatePost() {
                         <option value="Question">Question</option>
                         <option value="Opinion">Opinion</option>
                     </select>
-                    {/* Secret key */}
-                    <input
-                        type="password"
-                        name="secret_key"
-                        placeholder=" Enter secret key"
-                        value={post.secret_key} // User's secret key
-                        onChange={handleChange} // Update state
-                    />
+
                 </div>
                 <br /><br />
 

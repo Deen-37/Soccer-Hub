@@ -12,6 +12,8 @@ function Navbar() {
                 <div className="nav-links">
                     <Link to="/">Home</Link>
                     <Link to="/create" className="nav-cta">Create Post</Link>
+                    <Link to="/login">Login</Link>
+                    <Link to="/signup">Sign Up</Link>
                 </div>
             </div>
         </nav>

@@ -16,21 +16,27 @@ function Home() {
         getPosts();
     }, []);
 
-    // Get all posts from Supabase
+    // Get all posts from our Express API
     const getPosts = async () => {
-        setLoading(true); // Start loading
-        const { data, error } = await supabase
-            .from("Posts")
-            .select("*")
-            .order("created_at", { ascending: false });
+        setLoading(true);
 
-        if (error) {
+        try {
+            const response = await fetch("http://localhost:3000/posts");
+
+            // Stop if the API request failed
+            if (!response.ok) {
+                throw new Error("Failed to fetch posts");
+            }
+
+            const data = await response.json();
+
+            console.log("Posts received:", data);
+            setPosts(data);
+        } catch (error) {
             console.error(error);
-            return;
+        } finally {
+            setLoading(false);
         }
-
-        setPosts(data);
-        setLoading(false); // Finished loading
     };
 
     // Exact timestamp, shown on hover as a tooltip — e.g. "Aug 2, 2026, 3:45 PM"

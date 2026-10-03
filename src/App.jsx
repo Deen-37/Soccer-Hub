@@ -7,6 +7,8 @@ import CreatePost from "./pages/CreatePost";
 import ViewPost from "./pages/ViewPost";
 import EditPost from "./pages/EditPost";
 import Navbar from "./components/Navbar";
+import SignUp from "./pages/signup";
+import Login from "./pages/login";
 function App() {
   useEffect(() => {
     const response = async () => {
@@ -31,6 +33,8 @@ function App() {
           <Route path="/create" element={<CreatePost />} />
           <Route path="/post/:id" element={<ViewPost />} />
           <Route path="/edit/:id" element={<EditPost />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </main>
 

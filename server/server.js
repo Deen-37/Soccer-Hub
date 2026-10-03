@@ -4,9 +4,10 @@ import jwt from "jsonwebtoken";
 import pool from "./db.js"; // Import our PostgreSQL connection pool
 import express from "express";
 import authMiddleware from "./middleware/authMiddleware.js";
-
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 app.use(express.json()) // Express: allow us to read JSON request bodies
 // Express route: GET /posts
 
@@ -65,7 +66,7 @@ app.post("/posts", authMiddleware, async(req,res) => {
         const result = await pool.query(
             `INSERT INTO Posts
             (title, content, category, image_url, flag, user_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *`,
             [title, content, category, image_url, flag, userId]
         );
@@ -164,6 +165,30 @@ app.post("/auth/register", async (req, res) => {
                 error: "Username, email, and password are required"
             });
         }
+        // Require a minimum password length
+        if (password.length < 8) {
+            return res.status(400).json({
+                error: "Password must be at least 8 characters"
+            });
+        }
+// Check for a basic email format
+        if (!email.includes("@")) {
+            return res.status(400).json({
+                error: "Invalid email address"
+            });
+        }
+        // Require a minimum username length
+        if (username.length < 3) {
+            return res.status(400).json({
+                error: "Username must be at least 3 characters"
+            });
+        }
+        // Check username format
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return res.status(400).json({
+                error: "Username can only contain letters, numbers, and underscores"
+            });
+        }
         // Hash the password before storing it
         const passwordHash = await bcrypt.hash(password, 10);
 
@@ -201,30 +226,7 @@ app.post("/auth/login" , async(req, res) => {
                 error: "Email and password are required"
             });
         }
-        // Require a minimum password length
-if (password.length < 8) {
-    return res.status(400).json({
-        error: "Password must be at least 8 characters"
-    });
-}
-// Check for a basic email format
-        if (!email.includes("@")) {
-            return res.status(400).json({
-                error: "Invalid email address"
-            });
-        }
-        // Require a minimum username length
-        if (username.length < 3) {
-            return res.status(400).json({
-                error: "Username must be at least 3 characters"
-            });
-        }
-        // Check username format
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-            return res.status(400).json({
-                error: "Username can only contain letters, numbers, and underscores"
-            });
-        }
+        
 
         const result = await pool.query(
             "SELECT *   FROM Users WHERE email = $1",

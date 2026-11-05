@@ -4,7 +4,7 @@ Submitted by: **Selehadin Abebe**
 
 This web app: **A soccer community platform where users can create, browse, search, sort, upvote, comment on, edit, delete, and repost soccer-related posts. Users can categorize posts, filter content, protect their posts with a secret key, and follow repost threads linked to the original post.**
 
-Time spent: **12+** hours spent in total
+
 
 ## Required Features
 

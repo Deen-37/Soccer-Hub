@@ -5,11 +5,32 @@ import pool from "./db.js"; // Import our PostgreSQL connection pool
 import express from "express";
 import authMiddleware from "./middleware/authMiddleware.js";
 import cors from "cors";
+import multer from "multer";
+import cloudinary from "./config/cloudinary.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json()) // Express: allow us to read JSON request bodies
 // Express route: GET /posts
+
+// Store uploaded images temporarily in memory
+const storage = multer.memoryStorage();
+
+// Configure image upload restrictions
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // Maximum 5 MB
+    },
+    fileFilter: (req, file, callback) => {
+        // Accept only image files
+        if (file.mimetype.startsWith("image/")) {
+            callback(null, true);
+        } else {
+            callback(new Error("Only image files are allowed"));
+        }
+    },
+});
 
 // GET /posts/:id → retrieve one specific post
 app.get("/posts/:id", async (req, res) => {
@@ -378,6 +399,38 @@ app.post("/posts/:id/repost", authMiddleware, async (req, res) => {
     } catch (error) {
         console.error("Error reposting:", error);
         res.status(500).json({ error: "Failed to repost post" });
+    }
+});
+
+// POST /upload → upload an image to Cloudinary
+app.post("/upload", authMiddleware, upload.single("image"), async (req, res) => {
+    try {
+        // Make sure an image was provided
+        if (!req.file) {
+            return res.status(400).json({ error: "No image provided" });
+        }
+
+        // Upload the image buffer to Cloudinary
+        const result = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                { folder: "soccer-hub" },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            );
+
+            stream.end(req.file.buffer);
+        });
+
+        // Return the permanent image URL
+        res.status(201).json({
+            imageUrl: result.secure_url,
+        });
+
+    } catch (error) {
+        console.error("Image upload error:", error);
+        res.status(500).json({ error: "Failed to upload image" });
     }
 });
 

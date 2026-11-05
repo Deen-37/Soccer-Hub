@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../client";
 import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 function Home() {

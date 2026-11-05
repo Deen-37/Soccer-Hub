@@ -279,6 +279,108 @@ app.get("/protected", authMiddleware, (req, res) => {
     });
 });
 
+app.put("/posts/:id/upvote", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Increase the post's upvote count by 1
+        const result = await pool.query(
+            `UPDATE Posts
+             SET upvotes = upvotes + 1
+             WHERE id = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        console.error("Error upvoting post:", error);
+        res.status(500).json({ error: "Failed to upvote post" });
+    }
+});
+
+app.get("/posts/:id/comments", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Get comments for this post
+        const result = await pool.query(
+            `SELECT *
+             FROM Comments
+             WHERE post_id = $1
+             ORDER BY created_at ASC`,
+            [id]
+        );
+
+        res.json(result.rows);
+
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        res.status(500).json({ error: "Failed to fetch comments" });
+    }
+});
+
+app.post("/posts/:id/comments", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+
+        // Require comment text
+        if (!content || !content.trim()) {
+            return res.status(400).json({
+                error: "Comment cannot be empty"
+            });
+        }
+
+        // Create the comment
+        const result = await pool.query(
+            `INSERT INTO Comments (content, post_id)
+             VALUES ($1, $2)
+             RETURNING *`,
+            [content, id]
+        );
+
+        res.status(201).json(result.rows[0]);
+
+    } catch (error) {
+        console.error("Error creating comment:", error);
+        res.status(500).json({ error: "Failed to create comment" });
+    }
+});
+
+app.post("/posts/:id/repost", authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.userId;
+
+        // Copy the post and assign the repost to the logged-in user
+        const result = await pool.query(
+            `INSERT INTO Posts
+            (title, content, category, image_url, flag, reposted_from, user_id)
+            SELECT title, content, category, image_url, flag, id, $2
+            FROM Posts
+            WHERE id = $1
+            RETURNING *`,
+            [id, userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        res.status(201).json(result.rows[0]);
+
+    } catch (error) {
+        console.error("Error reposting:", error);
+        res.status(500).json({ error: "Failed to repost post" });
+    }
+});
+
 // Start the Express server on port 3000
 app.listen(3000, () => {
     console.log("Server running on port 3000");

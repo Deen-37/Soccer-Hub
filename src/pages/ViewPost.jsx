@@ -22,6 +22,8 @@ function ViewPost() {
 
             const data = await response.json();
             setOriginalPost(data);
+
+
         } catch (error) {
             console.error(error);
         }
@@ -38,6 +40,14 @@ function ViewPost() {
             const data = await response.json();
 
             setPost(data);
+
+            const commentsResponse = await fetch(
+                `http://localhost:3000/posts/${id}/comments`
+            );
+
+            const commentsData = await commentsResponse.json();
+
+            setComments(commentsData);
 
             // Load the original post if this is a repost
             if (data.reposted_from) {
@@ -57,69 +67,89 @@ function ViewPost() {
     }
 
     const upvotePost = async () => {
-        const { data, error } = await supabase
-            .from("Posts")
-            .update({ upvotes: post.upvotes + 1 })
-            .eq("id", id)
-        if (error) {
-            alert(error);
-            return;
+        try {
+            // Tell Express to increase the upvote count
+            const response = await fetch(`http://localhost:3000/posts/${id}/upvote`, {
+                method: "PUT",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to upvote post");
+            }
+
+            // Refresh the post
+            await getPost();
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
         }
-
-        await getPost();
-
-    }
+    };
     // Get comments for this post
 
     // Add a new comment
-    const addComment = async () => {
-        event.preventDefault();          // stop the page reload
+    const addComment = async (event) => {
+        event.preventDefault();
 
-        if (!newComment.trim()) return;  // don't insert empty comments
-        const { error } = await supabase
-            .from("Comments")
-            .insert({
-                content: newComment,
-                post_id: id,
-            });
-        console.log(error)
-        if (!error) {
-            setNewComment(""); // Clear input
-            getPost(); // Refresh comments
-        }
-        else {
-            console.log(error)
+        if (!newComment.trim()) return;
+
+        try {
+            // Send the comment to Express
+            const response = await fetch(
+                `http://localhost:3000/posts/${id}/comments`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        content: newComment,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to add comment");
+            }
+
+            setNewComment("");
+
+            // Refresh comments
+            await getPost();
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
         }
     };
     // Repost current post
     const repostPost = async () => {
-        const newSecretKey = prompt("Enter a secret key for your repost:");
+        try {
+            // Send repost request to Express
+            const response = await fetch(
+                `http://localhost:3000/posts/${id}/repost`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
 
-        if (!newSecretKey) {
-            alert("Secret key is required.");
-            return;
-        }
-        const { data, error } = await supabase
-            .from("Posts")
-            .insert([{
-                title: post.title,
-                content: post.content,
-                image_url: post.image_url,
-                category: post.category,
-                flag: post.flag,          // Copy flag/category if you use it
-                secret_key: newSecretKey,
-                reposted_from: post.id,
-            }])
-            .select()
-            .single();
+            if (!response.ok) {
+                throw new Error("Failed to repost");
+            }
 
-        if (error) {
+            const data = await response.json();
+
+            // Open the newly created repost
+            navigate(`/post/${data.id}`);
+
+        } catch (error) {
+            console.error(error);
             alert(error.message);
-            return;
         }
-
-        navigate(`/post/${data.id}`);
-    }
+    };
 
     // Exact timestamp shown on hover — e.g. "Aug 4, 2026, 3:45 PM"
     const formatExact = (value) =>

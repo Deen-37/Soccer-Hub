@@ -19,17 +19,7 @@ function CreatePost() {
             [name]: value,      // Update only the field being edited
         }));
     };
-    // const createPost = async (event) => {
-    //     event.preventDefault();
-    //     const { error } = await supabase
-    //         .from("Posts")
-    //         .insert([post])
-    //     if (error) {
-    //         alert(error.message);
-    //         return;
-    //     }
-    //     navigate("/")
-    // }
+
     const createPost = async (event) => {
         event.preventDefault();
         try {

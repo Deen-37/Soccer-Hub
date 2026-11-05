@@ -41,7 +41,7 @@ The following **required** functionality is completed:
   - After a user creates a new post, they can go back and edit the post
   - A previously created post can be deleted from its post page
 
-The following **optional** features are implemented:
+The following extra features are implemented:
 
 - [x] Web app implements pseudo-authentication
   - Users can only edit and delete posts or delete comments by entering the secret key, which is set by the user during post creation

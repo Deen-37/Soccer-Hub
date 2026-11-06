@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
+import { CATEGORIES } from "../constants";
 
 function EditPost() {
     const [post, setPost] = useState({
@@ -121,13 +122,16 @@ function EditPost() {
 
                 <br /><br />
 
-                <input
-                    type="text"
+                <select
                     name="category"
-                    placeholder="Category"
-                    value={post.category}
+                    value={post.category || ""}
                     onChange={handleChange}
-                />
+                >
+                    <option value="">Select Category</option>
+                    {CATEGORIES.map((category) => (
+                        <option key={category} value={category}>{category}</option>
+                    ))}
+                </select>
                 <br /><br />
 
                 <div className="form-actions">

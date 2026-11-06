@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CATEGORIES, FLAGS } from "../constants";
 
 
 function CreatePost() {
@@ -87,11 +88,9 @@ function CreatePost() {
                         onChange={handleChange}
                     >
                         <option value="">Select Category</option>
-                        <option value="News">News</option>
-                        <option value="Transfer">Transfer</option>
-                        <option value="Match">Match</option>
-                        <option value="Discussion">Discussion</option>
-                        <option value="Other">Other</option>
+                        {CATEGORIES.map((category) => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
                     </select>
 
                     {/* Flag: the post's intent (separate from category/topic) */}
@@ -101,8 +100,9 @@ function CreatePost() {
                         onChange={handleChange}
                     >
                         <option value="">No Flag</option>
-                        <option value="Question">Question</option>
-                        <option value="Opinion">Opinion</option>
+                        {FLAGS.map((flag) => (
+                            <option key={flag} value={flag}>{flag}</option>
+                        ))}
                     </select>
 
                 </div>

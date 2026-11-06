@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { formatExact, formatRelative } from "../utils/formatDate";
+import { CATEGORIES, FLAGS } from "../constants";
 function Home() {
     //store search term
     const [searchTerm, setSearchTerm] = useState("");
@@ -69,16 +70,19 @@ function Home() {
             </div>
             <div className="category-buttons">
                 <button onClick={() => setSelectedCategory("All")}>All</button>
-                <button onClick={() => setSelectedCategory("News")}>News</button>
-                <button onClick={() => setSelectedCategory("Transfer")}>Transfer</button>
-                <button onClick={() => setSelectedCategory("Match")}>Match</button>
-                <button onClick={() => setSelectedCategory("Discussion")}>Discussion</button>
-                <button onClick={() => setSelectedCategory("Other")}>Other</button>
+                {CATEGORIES.map((category) => (
+                    <button key={category} onClick={() => setSelectedCategory(category)}>
+                        {category}
+                    </button>
+                ))}
             </div>
             <div className="flag-buttons">
                 <button onClick={() => setSelectedFlag("All")}>All Flags</button>
-                <button onClick={() => setSelectedFlag("Question")}>Question</button>
-                <button onClick={() => setSelectedFlag("Opinion")}>Opinion</button>
+                {FLAGS.map((flag) => (
+                    <button key={flag} onClick={() => setSelectedFlag(flag)}>
+                        {flag}
+                    </button>
+                ))}
             </div>
             <div className="feed">
                 {posts.filter((post) => {

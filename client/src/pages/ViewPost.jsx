@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { Link } from "react-router-dom";
+import { formatExact, formatRelative } from "../utils/formatDate";
 function ViewPost() {
 
     const [post, setPost] = useState(null);
@@ -149,38 +150,6 @@ function ViewPost() {
             console.error(error);
             alert(error.message);
         }
-    };
-
-    // Exact timestamp shown on hover — e.g. "Aug 4, 2026, 3:45 PM"
-    const formatExact = (value) =>
-        new Date(value).toLocaleString(undefined, {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-        });
-
-    // Friendly relative label shown in the meta line — e.g. "3 hours ago"
-    const formatRelative = (value) => {
-        const then = new Date(value);                            // the post's creation time
-        const seconds = Math.floor((Date.now() - then) / 1000); // how many seconds ago
-
-        const units = [
-            ["year", 31536000],
-            ["month", 2592000],
-            ["day", 86400],
-            ["hour", 3600],
-            ["minute", 60],
-        ];
-
-        const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
-
-        for (const [unit, secondsInUnit] of units) {
-            const amount = Math.floor(seconds / secondsInUnit);
-            if (amount >= 1) return rtf.format(-amount, unit);
-        }
-        return "just now";
     };
 
     return (

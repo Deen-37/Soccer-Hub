@@ -5,8 +5,8 @@ import CreatePost from "./pages/CreatePost";
 import ViewPost from "./pages/ViewPost";
 import EditPost from "./pages/EditPost";
 import Navbar from "./components/Navbar";
-import SignUp from "./pages/signup";
-import Login from "./pages/login";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 function App() {
 
 

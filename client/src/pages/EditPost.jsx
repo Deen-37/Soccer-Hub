@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { CATEGORIES } from "../constants";
+import * as postsApi from "../api/posts";
 
 function EditPost() {
     const [post, setPost] = useState({
@@ -17,13 +18,8 @@ function EditPost() {
     const getPost = async () => {
         try {
 
-            //Get the post from Express
-            const response = await fetch(`http://localhost:3000/posts/${id}`);
-            if (!response) {
-                throw new Error("Failed to fetch post");
-            }
-
-            const data = await response.json();
+            // Get the post from Express
+            const data = await postsApi.getPost(id);
             setPost(data);
         }
         catch (error) {
@@ -46,16 +42,7 @@ function EditPost() {
     const deletePost = async () => {
         try {
             // Delete through Express
-            const response = await fetch(`http://localhost:3000/posts/${id}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete post");
-            }
+            await postsApi.deletePost(id);
 
             navigate("/");
         } catch (error) {
@@ -69,18 +56,7 @@ function EditPost() {
 
         try {
             // Send updated post to Express
-            const response = await fetch(`http://localhost:3000/posts/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify(post),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to update post");
-            }
+            await postsApi.updatePost(id, post);
 
             navigate(`/post/${id}`);
         } catch (error) {

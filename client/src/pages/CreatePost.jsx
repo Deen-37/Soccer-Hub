@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CATEGORIES, FLAGS } from "../constants";
+import * as postsApi from "../api/posts";
 
 
 function CreatePost() {
@@ -24,21 +25,8 @@ function CreatePost() {
     const createPost = async (event) => {
         event.preventDefault();
         try {
-            // Send the post to our Express API
-            const response = await fetch("http://localhost:3000/posts", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    // Send the logged-in user's JWT
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify(post),
-            });
-
-            // Handle API errors
-            if (!response.ok) {
-                throw new Error("Failed to create post");
-            }
+            // Send the post to our Express API (request() adds the JWT)
+            await postsApi.createPost(post);
 
             navigate("/");
         } catch (error) {

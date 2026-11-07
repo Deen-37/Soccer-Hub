@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api/auth";
 
 function Login() {
     const [form, setForm] = useState({
@@ -19,26 +20,18 @@ function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const response = await fetch("http://localhost:3000/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(form)
-        });
+        try {
+            const data = await login(form);
 
-        const data = await response.json();
+            // Save JWT for authenticated requests
+            localStorage.setItem("token", data.token);
 
-        if (!response.ok) {
-            alert(data.error);
-            return;
+            alert("Login successful!");
+            navigate("/");
+        } catch (error) {
+            // Wrong email/password or server error
+            alert(error.message);
         }
-
-        // Save JWT for authenticated requests
-        localStorage.setItem("token", data.token);
-
-        alert("Login successful!");
-        navigate("/");
     };
 
     return (

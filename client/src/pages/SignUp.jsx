@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { register } from "../api/auth";
 
 function SignUp() {
     const [form, setForm] = useState({
@@ -20,23 +21,15 @@ function SignUp() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const response = await fetch("http://localhost:3000/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(form)
-        });
+        try {
+            await register(form);
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert(data.error);
-            return;
+            alert("Account created!");
+            navigate("/login");
+        } catch (error) {
+            // Validation error, duplicate user, or server error
+            alert(error.message);
         }
-
-        alert("Account created!");
-        navigate("/login");
     };
 
     return (

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 
-function Navbar() {
+// token and logout come from App
+function Navbar({ token, logout }) {
     return (
         <nav className="nav-bar">
             {/* Inner wrapper: centered + capped at the page width, so the brand and
@@ -10,10 +11,20 @@ function Navbar() {
                     <h2>⚽ Soccer Hub</h2>
                 </Link>
                 <div className="nav-links">
-                    <Link to="/">Home</Link>
-                    <Link to="/create" className="nav-cta">Create Post</Link>
-                    <Link to="/login">Login</Link>
-                    <Link to="/signup">Sign Up</Link>
+                    {token ? (
+                        // Logged in
+                        <>
+                            <Link to="/">Home</Link>
+                            <Link to="/create" className="nav-cta">Create Post</Link>
+                            <button className="nav-logout" onClick={logout}>Logout</button>
+                        </>
+                    ) : (
+                        // Logged out
+                        <>
+                            <Link to="/login">Login</Link>
+                            <Link to="/signup">Sign Up</Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

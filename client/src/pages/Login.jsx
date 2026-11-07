@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/auth";
 
-function Login() {
+// setToken comes from App, so logging in updates the whole app right away
+function Login({ setToken }) {
     const [form, setForm] = useState({
         email: "",
         password: ""
@@ -25,6 +26,7 @@ function Login() {
 
             // Save JWT for authenticated requests
             localStorage.setItem("token", data.token);
+            setToken(data.token); // tell App the user is logged in
 
             alert("Login successful!");
             navigate("/");

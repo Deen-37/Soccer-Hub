@@ -142,6 +142,14 @@ nav .nav-links a:hover {
   color: #fff;                            /* full white text on hover */
 }
 
+/* Logout is a <button>, styled to look like the other nav links */
+nav .nav-links .nav-logout {
+  background: transparent;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* "Create Post" as a call-to-action: a solid white pill that pops on the green bar */
 nav .nav-links a.nav-cta {
   background: #fff;             /* white pill background */

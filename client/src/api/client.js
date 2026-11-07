@@ -7,10 +7,14 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 export async function request(path, options = {}) {
     const token = localStorage.getItem("token");
 
+    // Files are sent as FormData; the browser sets their Content-Type itself
+    const isFile = options.body instanceof FormData;
+
     const response = await fetch(`${API_URL}${path}`, {
         ...options,
         headers: {
-            "Content-Type": "application/json",
+            // Send JSON for everything except file uploads
+            ...(!isFile && { "Content-Type": "application/json" }),
             // Attach the JWT only when the user is logged in
             ...(token && { Authorization: `Bearer ${token}` }),
             ...options.headers,

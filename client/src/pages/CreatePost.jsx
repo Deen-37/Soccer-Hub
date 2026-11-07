@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CATEGORIES, FLAGS } from "../constants";
 import * as postsApi from "../api/posts";
+import { uploadImage } from "../api/upload";
 
 
 function CreatePost() {
@@ -12,6 +13,7 @@ function CreatePost() {
         category: "",
         flag: "",
     })
+    const [imageFile, setImageFile] = useState(null); // the picked image file
     const navigate = useNavigate();
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -25,8 +27,15 @@ function CreatePost() {
     const createPost = async (event) => {
         event.preventDefault();
         try {
+            // Upload the image first (if one was picked) to get its Cloudinary link
+            let imageUrl = "";
+            if (imageFile) {
+                const result = await uploadImage(imageFile);
+                imageUrl = result.imageUrl;
+            }
+
             // Send the post to our Express API (request() adds the JWT)
-            await postsApi.createPost(post);
+            await postsApi.createPost({ ...post, image_url: imageUrl });
 
             navigate("/");
         } catch (error) {
@@ -60,12 +69,11 @@ function CreatePost() {
 
                 <br /><br />
 
+                {/* Image (optional) — saved in imageFile, uploaded on submit */}
                 <input
-                    type="text"
-                    name="image_url"
-                    placeholder="Image URL (optional)"
-                    value={post.image_url}
-                    onChange={handleChange}
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => setImageFile(event.target.files[0])}
                 />
 
                 <br /><br />

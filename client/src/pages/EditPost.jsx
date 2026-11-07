@@ -15,21 +15,20 @@ function EditPost() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const getPost = async () => {
-        try {
-
-            // Get the post from Express
-            const data = await postsApi.getPost(id);
-            setPost(data);
-        }
-        catch (error) {
-            alert(error.message)
-        }
-    };
-
+    // Load the post when the page opens (or the id changes)
     useEffect(() => {
-        getPost()
-    }, [])
+        const getPost = async () => {
+            try {
+                // Get the post from Express
+                const data = await postsApi.getPost(id);
+                setPost(data);
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        getPost();
+    }, [id]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;

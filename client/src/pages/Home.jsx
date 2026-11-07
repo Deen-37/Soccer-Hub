@@ -15,25 +15,21 @@ function Home() {
     const [selectedFlag, setSelectedFlag] = useState("All"); // Current flag filter
     // Fetch posts when the page loads
     useEffect(() => {
+        // Get all posts from our Express API
+        const getPosts = async () => {
+            try {
+                // request() throws if the API request failed
+                const data = await fetchPosts();
+                setPosts(data);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         getPosts();
     }, []);
-
-    // Get all posts from our Express API
-    const getPosts = async () => {
-        setLoading(true);
-
-        try {
-            // request() throws if the API request failed
-            const data = await fetchPosts();
-
-            console.log("Posts received:", data);
-            setPosts(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     if (loading) {
         return (

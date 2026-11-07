@@ -14,37 +14,35 @@ function ViewPost() {
     // Store the user's comment
     const [newComment, setNewComment] = useState("");
     const [originalPost, setOriginalPost] = useState(null); // Original reposted post
-    // Fetch original post
-    const getOriginalPost = async (id) => {
-        try {
-            const data = await postsApi.getPost(id);
-            setOriginalPost(data);
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    const getPost = async () => {
-        try {
-            // Get the post from Express
-            const data = await postsApi.getPost(id);
-            setPost(data);
-
-            const commentsData = await commentsApi.getComments(id);
-            setComments(commentsData);
-
-            // Load the original post if this is a repost
-            if (data.reposted_from) {
-                getOriginalPost(data.reposted_from);
-            }
-        } catch (error) {
-            alert(error.message);
-        }
-    };
-
+    // Load the post, its comments, and the original post (for reposts)
+    // Runs when the page opens and again whenever the id in the URL changes
     useEffect(() => {
+        const getPost = async () => {
+            try {
+                // Get the post from Express
+                const data = await postsApi.getPost(id);
+                setPost(data);
+
+                const commentsData = await commentsApi.getComments(id);
+                setComments(commentsData);
+
+                // Load the original post if this is a repost
+                if (data.reposted_from) {
+                    try {
+                        setOriginalPost(await postsApi.getPost(data.reposted_from));
+                    } catch (error) {
+                        console.error(error);
+                    }
+                } else {
+                    setOriginalPost(null);
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
         getPost();
-    }, []);
+    }, [id]);
 
     if (!post) {
         return <h2>Loading...</h2>;
@@ -53,10 +51,9 @@ function ViewPost() {
     const upvotePost = async () => {
         try {
             // Tell Express to increase the upvote count
-            await postsApi.upvotePost(id);
-
-            // Refresh the post
-            await getPost();
+            // The server sends back the updated post, so no need to reload
+            const updatedPost = await postsApi.upvotePost(id);
+            setPost(updatedPost);
 
         } catch (error) {
             console.error(error);
@@ -73,12 +70,11 @@ function ViewPost() {
 
         try {
             // Send the comment to Express
-            await commentsApi.addComment(id, newComment);
+            // The server sends back the new comment; add it to the end of the list
+            const createdComment = await commentsApi.addComment(id, newComment);
+            setComments((prevComments) => [...prevComments, createdComment]);
 
             setNewComment("");
-
-            // Refresh comments
-            await getPost();
 
         } catch (error) {
             console.error(error);

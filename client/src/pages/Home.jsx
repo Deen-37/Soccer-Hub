@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { formatExact, formatRelative } from "../utils/formatDate";
 import { CATEGORIES, FLAGS } from "../constants";
+import { getPosts as fetchPosts } from "../api/posts";
 function Home() {
     //store search term
     const [searchTerm, setSearchTerm] = useState("");
@@ -22,14 +23,8 @@ function Home() {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:3000/posts");
-
-            // Stop if the API request failed
-            if (!response.ok) {
-                throw new Error("Failed to fetch posts");
-            }
-
-            const data = await response.json();
+            // request() throws if the API request failed
+            const data = await fetchPosts();
 
             console.log("Posts received:", data);
             setPosts(data);

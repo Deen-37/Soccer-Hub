@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import { formatExact, formatRelative } from "../utils/formatDate";
+import * as postsApi from "../api/posts";
+import * as commentsApi from "../api/comments";
 function ViewPost() {
 
     const [post, setPost] = useState(null);
@@ -15,15 +17,8 @@ function ViewPost() {
     // Fetch original post
     const getOriginalPost = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/posts/${id}`);
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch original post");
-            }
-
-            const data = await response.json();
+            const data = await postsApi.getPost(id);
             setOriginalPost(data);
-
 
         } catch (error) {
             console.error(error);
@@ -32,22 +27,10 @@ function ViewPost() {
     const getPost = async () => {
         try {
             // Get the post from Express
-            const response = await fetch(`http://localhost:3000/posts/${id}`);
-
-            if (!response.ok) {
-                throw new Error("Failed to fetch post");
-            }
-
-            const data = await response.json();
-
+            const data = await postsApi.getPost(id);
             setPost(data);
 
-            const commentsResponse = await fetch(
-                `http://localhost:3000/posts/${id}/comments`
-            );
-
-            const commentsData = await commentsResponse.json();
-
+            const commentsData = await commentsApi.getComments(id);
             setComments(commentsData);
 
             // Load the original post if this is a repost
@@ -70,13 +53,7 @@ function ViewPost() {
     const upvotePost = async () => {
         try {
             // Tell Express to increase the upvote count
-            const response = await fetch(`http://localhost:3000/posts/${id}/upvote`, {
-                method: "PUT",
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to upvote post");
-            }
+            await postsApi.upvotePost(id);
 
             // Refresh the post
             await getPost();
@@ -96,22 +73,7 @@ function ViewPost() {
 
         try {
             // Send the comment to Express
-            const response = await fetch(
-                `http://localhost:3000/posts/${id}/comments`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        content: newComment,
-                    }),
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to add comment");
-            }
+            await commentsApi.addComment(id, newComment);
 
             setNewComment("");
 
@@ -127,21 +89,7 @@ function ViewPost() {
     const repostPost = async () => {
         try {
             // Send repost request to Express
-            const response = await fetch(
-                `http://localhost:3000/posts/${id}/repost`,
-                {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Failed to repost");
-            }
-
-            const data = await response.json();
+            const data = await postsApi.repostPost(id);
 
             // Open the newly created repost
             navigate(`/post/${data.id}`);

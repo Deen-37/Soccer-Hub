@@ -7,8 +7,14 @@ const router = Router();
 // GET /posts → retrieve all posts
 router.get("/", async (req, res) => {
     try {
-        // SQL query: get all posts from PostgreSQL
-        const result = await pool.query("SELECT * FROM Posts");
+        // SQL query: get all posts, plus the author's username and the number of comments
+        const result = await pool.query(`
+            SELECT p.*, u.username, COUNT(c.id)::int AS comment_count
+            FROM posts p
+            JOIN users u ON u.id = p.user_id
+            LEFT JOIN comments c ON c.post_id = p.id
+            GROUP BY p.id, u.username
+        `);
 
         // Send the posts back as JSON
         res.json(result.rows);
@@ -144,8 +150,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     }
 });
 
-// PUT /posts/:id/upvote → add one upvote to a post
-router.put("/:id/upvote", async (req, res) => {
+// PUT /posts/:id/upvote → add one upvote to a post (requires login)
+router.put("/:id/upvote", authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
 

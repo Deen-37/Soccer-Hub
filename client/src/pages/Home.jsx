@@ -104,26 +104,39 @@ function Home() {
                 })
                     .map((post) => (    // tellin
                         <Link to={`/post/${post.id}`} key={post.id} className="post-card">
-                            <div>
-                                <h2>{post.title}</h2>
-                                <p>👍 {post.upvotes}</p>
-                                {/* Visible text is relative ("3 hours ago"); hovering shows the exact time */}
-                                <p title={formatExact(post.created_at)}>
-                                    Posted {formatRelative(post.created_at)}
+                            {/* Picture on the left (only if the post has one) */}
+                            {post.image_url && (
+                                <img src={post.image_url} alt="" className="card-img" />
+                            )}
+
+                            <div className="card-body">
+                                {/* Avatar letter + username + time; hovering shows the exact time */}
+                                <p className="card-author" title={formatExact(post.created_at)}>
+                                    <span className="avatar">{post.username[0].toUpperCase()}</span>
+                                    {post.username} · {formatRelative(post.created_at)}
                                 </p>
 
-                                {/* Category in the lower-right — plain red text, no pill */}
-                                {post.category && (
-                                    <span className="card-category">{post.category}</span>
-                                )}
+                                <h2>{post.title}</h2>
 
-                                {/* Flag emoji in the top-right — 💬 for Opinion, ❔ otherwise */}
-                                {post.flag && (
-                                    <span className="card-flag">
-                                        {post.flag === "Opinion" ? "💬" : "❔"}
-                                    </span>
-                                )}
+                                {/* First 120 characters of the post */}
+                                <p className="card-preview">
+                                    {post.content.length > 120 ? post.content.slice(0, 120) + "…" : post.content}
+                                </p>
+
+                                <p>💬 {post.comment_count} comments · 👍 {post.upvotes}</p>
                             </div>
+
+                            {/* Category in the lower-right — plain red text, no pill */}
+                            {post.category && (
+                                <span className="card-category">{post.category}</span>
+                            )}
+
+                            {/* Flag emoji in the top-right — 💬 for Opinion, ❔ otherwise */}
+                            {post.flag && (
+                                <span className="card-flag">
+                                    {post.flag === "Opinion" ? "💬" : "❔"}
+                                </span>
+                            )}
                         </Link>
 
 
